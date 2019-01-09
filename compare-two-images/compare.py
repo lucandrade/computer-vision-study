@@ -21,28 +21,23 @@ def mse(imageA, imageB):
 	# the two images are
 	return err
 
-def compare_images(imageA, imageB, title):
+def compare_images(fig, imageA, imageB, title, row):
 	# compute the mean squared error and structural similarity
 	# index for the images
 	m = mse(imageA, imageB)
 	s = ssim(imageA, imageB)
 
-	# setup the figure
-	fig = plt.figure(title)
-	plt.suptitle("MSE: %.2f, SSIM: %.2f" % (m, s))
-
 	# show first image
-	ax = fig.add_subplot(1, 2, 1)
+	ax = fig.add_subplot(3, 2, row)
+	ax.set_title("MSE: %.2f, SSIM: %.2f" % (m, s))
 	plt.imshow(imageA, cmap = plt.cm.gray)
 	plt.axis("off")
 
 	# show the second image
-	ax = fig.add_subplot(1, 2, 2)
+	ax = fig.add_subplot(3, 2, row + 1)
+	ax.set_title(title)
 	plt.imshow(imageB, cmap = plt.cm.gray)
 	plt.axis("off")
-
-	# show the images
-	plt.show()
 
 # load the images -- the original, the original + contrast,
 # and the original + photoshop
@@ -55,22 +50,29 @@ original = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
 contrast = cv2.cvtColor(contrast, cv2.COLOR_BGR2GRAY)
 shopped = cv2.cvtColor(shopped, cv2.COLOR_BGR2GRAY)
 
-# initialize the figure
-fig = plt.figure("Images")
-images = ("Original", original), ("Contrast", contrast), ("Photoshopped", shopped)
+def show_original_images():
+	# initialize the figure
+	fig = plt.figure("Images")
+	images = ("Original", original), ("Contrast", contrast), ("Photoshopped", shopped)
 
-# loop over the images
-for (i, (name, image)) in enumerate(images):
-	# show the image
-	ax = fig.add_subplot(1, 3, i + 1)
-	ax.set_title(name)
-	plt.imshow(image, cmap = plt.cm.gray)
-	plt.axis("off")
+	# loop over the images
+	for (i, (name, image)) in enumerate(images):
+		# show the image
+		ax = fig.add_subplot(1, 3, i + 1)
+		ax.set_title(name)
+		plt.imshow(image, cmap = plt.cm.gray)
+		plt.axis("off")
 
-# show the figure
-plt.show()
+	# show the figure
+	plt.show()
+
+show_original_images()
+
+fig = plt.figure("Comparison")
 
 # compare the images
-compare_images(original, original, "Original vs. Original")
-compare_images(original, contrast, "Original vs. Contrast")
-compare_images(original, shopped, "Original vs. Photoshopped")
+compare_images(fig, original, original, "Original", 1)
+compare_images(fig, original, contrast, "Contrast", 3)
+compare_images(fig, original, shopped, "Photoshopped", 5)
+
+plt.show()
